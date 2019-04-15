@@ -1,0 +1,20 @@
+'use strict';
+
+/**
+ * @param {Egg.Application} app - egg application
+ */
+module.exports = app => {
+  const { controller, config } = app;
+  const qiju = app.router.namespace(config.qiju.namespace);
+
+  // const auth = app.middleware.auth({
+  //   prefix: config.qiju.host + `/qiju/${config.apiLevel}/api/auth?redirect=`,
+  //   whiteList: new Set([ '' ]),
+  //   config,
+  // });
+
+  qiju.get('/', controller.home.index);
+  qiju.post('/user/login', controller.user.login);
+  qiju.post('/user/register', controller.user.register);
+
+};

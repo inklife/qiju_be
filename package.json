@@ -1,0 +1,57 @@
+{
+  "name": "qiju_be",
+  "version": "0.0.1-beta",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "egg": "^2.21.1",
+    "egg-cors": "^2.2.0",
+    "egg-mysql": "^3.0.0",
+    "egg-redis": "^2.3.1",
+    "egg-router-plus": "^1.3.0",
+    "egg-scripts": "^2.11.0",
+    "egg-session": "^3.1.0",
+    "egg-session-redis": "^2.1.0",
+    "egg-tracer": "^1.1.0",
+    "egg-validate": "^2.0.2",
+    "moment": "^2.24.0",
+    "ms": "^2.1.1",
+    "qrcode": "^1.3.3",
+    "shortid": "^2.2.14"
+  },
+  "devDependencies": {
+    "autod": "^3.1.0",
+    "autod-egg": "^1.1.0",
+    "egg-bin": "^4.12.3",
+    "egg-ci": "^1.11.0",
+    "egg-mock": "^3.22.2",
+    "eslint": "^5.16.0",
+    "eslint-config-egg": "^7.3.1",
+    "eslint-plugin-html": "^5.0.3",
+    "webstorm-disable-index": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-qiju_be",
+    "stop": "egg-scripts stop --title=egg-server-qiju_be",
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run lint && npm run cov",
+    "autod": "autod"
+  },
+  "ci": {
+    "version": "8"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "shuang6",
+  "license": "MIT"
+}

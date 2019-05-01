@@ -42,6 +42,26 @@ class UserService extends Service {
     const user = await this.app.mysql.get('user_info', { email });
     return !!user;
   }
+  // 更新用户资料
+  async updateUserPage(user_id, {
+    user_name,
+    email,
+    phone,
+    gender,
+    region,
+  }) {
+    const options = {
+      where: { user_id },
+    };
+    const result = await this.app.mysql.update('user_info', {
+      user_name,
+      email,
+      phone,
+      gender,
+      region,
+    }, options); // 更新 posts 表中的记录
+    return result.affectedRows === 1;
+  }
 }
 
 module.exports = UserService;

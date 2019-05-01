@@ -12,9 +12,11 @@ module.exports = app => {
   //   whiteList: new Set([ '' ]),
   //   config,
   // });
-
+  const auth = app.middleware.auth();
+  // 用户登录与注册
   qiju.get('/', controller.home.index);
   qiju.post('/user/login', controller.user.login);
   qiju.post('/user/register', controller.user.register);
-
+  // 更新用户个人信息
+  qiju.post('/user/user_page', auth, controller.user.updateUserPage);
 };

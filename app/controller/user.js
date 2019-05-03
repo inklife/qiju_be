@@ -89,7 +89,7 @@ class UserController extends Controller {
   async updateUserPage() {
     const { ctx } = this;
     const { user_name, email, phone, gender, region } = ctx.request.body;
-    const user_id = ctx.session;
+    const user_id = ctx.session.user_id;
     // 日志输出
     ctx.logger.info(ctx.request.body);
     // resp 为本次修改数据库影响行数是否为1行 的逻辑值

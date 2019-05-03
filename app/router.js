@@ -19,4 +19,6 @@ module.exports = app => {
   qiju.post('/user/register', controller.user.register);
   // 更新用户个人信息
   qiju.post('/user/user_page', auth, controller.user.updateUserPage);
+  // 文件上传
+  qiju.post('/file/upload', controller.file.upload);
 };

@@ -1,6 +1,9 @@
 'use strict';
 
+const os = require('os');
+const path = require('path');
 const ms = require('ms');
+
 module.exports = appInfo => {
   const config = exports = {};
 
@@ -91,6 +94,17 @@ module.exports = appInfo => {
   config.cors = {
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTION',
     credentials: true,
+  };
+
+  // 文件上传设置
+  config.multipart = {
+    mode: 'file',
+    tmpdir: path.join(os.tmpdir(), 'egg-multipart-tmp', appInfo.name),
+    cleanSchedule: {
+      // run tmpdir clean job on every day 04:30 am
+      // cron style see https://github.com/eggjs/egg-schedule#cron-style-scheduling
+      cron: '0 30 4 * * *',
+    },
   };
 
   // nginx 设置

@@ -31,5 +31,9 @@ module.exports = {
     enable: true,
     package: 'egg-router-plus',
   },
+  // multipart: {
+  //   enable: true,
+  //   package: 'egg-multipart',
+  // },
   // nunjucks: true,
 };

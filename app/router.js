@@ -21,4 +21,12 @@ module.exports = app => {
   qiju.post('/user/user_page', auth, controller.user.updateUserPage);
   // 文件上传
   qiju.post('/file/upload', controller.file.upload);
+  // 上传房源信息
+  qiju.post('/user/houseEdit', auth, controller.house.uploadHouseInfo);
+  // 提交房源评价
+  qiju.post('/user/remarkEdit', auth, controller.house.editHouseRemark);
+  // 收藏房源
+  qiju.post('/user/collectHouse', auth, controller.house.favouriteHouse);
+  // 上传闲置物品信息
+  qiju.post('/user/itemEdit', auth, controller.item.uploadItemInfo);
 };

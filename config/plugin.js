@@ -36,4 +36,9 @@ module.exports = {
   //   package: 'egg-multipart',
   // },
   // nunjucks: true,
+  // {app_root}/config/plugin.js
+  cos: {
+    enable: true,
+    package: 'egg-cos',
+  },
 };

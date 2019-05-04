@@ -1,7 +1,11 @@
 'use strict';
 // app/extend/helper.js
 const crypto = require('crypto');
-const sha1 = str => crypto.createHash('sha1').update(str).digest('hex');
+const sha1 = str =>
+  crypto
+    .createHash('sha1')
+    .update(str)
+    .digest('hex');
 /**
  * ctx.helper 的扩展方法
  * 建议这里只扩展简单的计算类同步方法
@@ -24,7 +28,22 @@ module.exports = {
   // Date 对象 转时间戳 -> +new Date() 、 new Date().getTime() 等
   calculateDayDistance(day, otherDay) {
     const dateTime = 1000 * 60 * 60 * 24; // 每一天的毫秒数
-    const minusDays = Math.floor(((otherDay - day) / dateTime)); // 计算出两个日期的天数差
+    const minusDays = Math.floor((otherDay - day) / dateTime); // 计算出两个日期的天数差
     return minusDays; // ~~取绝对值~~ 不取绝对值了，现在
+  },
+  // 生成年月日+分隔符
+  generateYYMMDD() {
+    const t = new Date();
+    const Y = t.getFullYear();
+    const M = t.getMonth() + 1;
+    const D = t.getDate();
+    return `${Y}/${M}/${D}/`;
+  },
+  // 产生一个n位随机数
+  random(n) {
+    if (n < 1) {
+      n = 6;
+    }
+    return `${Math.random()}`.slice(0 - n);
   },
 };

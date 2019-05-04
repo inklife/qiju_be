@@ -12,3 +12,4 @@ run/
 *.un~
 -
 config/config.prod.js
+config/config.local.js

@@ -6,6 +6,7 @@
   "dependencies": {
     "egg": "^2.21.1",
     "egg-cors": "^2.2.0",
+    "egg-cos": "^1.0.2",
     "egg-multipart": "^2.5.0",
     "egg-mysql": "^3.0.0",
     "egg-redis": "^2.3.1",

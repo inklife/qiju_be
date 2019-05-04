@@ -119,5 +119,16 @@ module.exports = appInfo => {
     FALSE: 0,
   });
 
+  // 文件储存桶配置
+  // 请务必在 config.**.js 中覆盖此配置
+  config.cos = {
+    client: {
+      secretId: '',
+      secretKey: '',
+      bucket: 'qiju',
+      region: 'ap-chongqing',
+    },
+  };
+
   return config;
 };

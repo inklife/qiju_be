@@ -34,6 +34,29 @@ class ItemController extends Controller {
       code: -1,
     };
   }
+  async favouriteItem() {
+    const { ctx } = this;
+    const { item_id } = ctx.request.body;
+    const user_id = ctx.session.user_id;
+    const colloect_id = shortid.generate();
+    // 日志输出
+    ctx.logger.info(ctx.request.body);
+    // resp 为本次修改数据库影响行数是否为1行 的逻辑值
+    const resp = await this.service.item.updateFavouriteItem({
+      user_id,
+      item_id,
+      colloect_id,
+    });
+    if (resp) {
+      ctx.body = {
+        code: 1,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+    };
+  }
 }
 
 module.exports = ItemController;

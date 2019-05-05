@@ -39,6 +39,24 @@ class HouseService extends Service {
     }
     return await this.app.mysql.insert('house_collect', options);
   }
+  // 通过house_id获取房屋信息
+  async getHouseByHouserId(house_id) {
+    return await this.app.mysql.get('house_info', { house_id });
+  }
+  async getHouses(options) {
+    if (options.limit == -1) {
+      return await this.app.mysql.query(options.sql);
+    }
+    return await this.app.mysql.query(options.sql, [ options.offset, options.limit ]);
+  }
+  async deleteHouse(options) {
+    await this.app.mysql.delete('house_info', { house_id: options.house_id });
+    await this.app.mysql.delete('house_remark', { house_id: options.house_id });
+    await this.app.mysql.delete('house_collect', { house_id: options.house_id });
+  }
+  async getHouseRentStatus(house_id) {
+    return await this.app.mysql.get('house_info', { house_id });
+  }
 }
 
 module.exports = HouseService;

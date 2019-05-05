@@ -29,4 +29,18 @@ module.exports = app => {
   qiju.post('/user/collectHouse', auth, controller.house.favouriteHouse);
   // 上传闲置物品信息
   qiju.post('/user/itemEdit', auth, controller.item.uploadItemInfo);
+  // 收藏闲置物品
+  qiju.post('/user/collectItem', auth, controller.item.favouriteItem);
+  // 检查房源是否存在
+  qiju.get('/user/checkHouseid', controller.house.checkHouse);
+  // 更新房源信息
+  qiju.post('/house/houseUpdate', auth, controller.house.updateHouseInfo);
+  // 获取房源按收藏数排序
+  qiju.post('/house/markedRank', auth, controller.house.getHousesByCollectNumber);
+  // 更新房源评论
+  qiju.post('/house/remarkUpdate', auth, controller.house.updateHouseRemark);
+  // 删除房屋信息
+  qiju.delete('/house/houseDelete', auth, controller.house.deleteHouse);
+  // 判断房屋rent状态
+  qiju.get('/house/houseRent', auth, controller.house.getHouseRentStatus);
 };

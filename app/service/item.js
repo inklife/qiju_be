@@ -14,6 +14,17 @@ class ItemService extends Service {
     }
     return await this.app.mysql.insert('item_info', options);
   }
+  async updateFavouriteItem(options) {
+    const item = await this.app.mysql.get('item_collect', { collect_id: options.collect_id });
+    if (item) {
+      return await this.app.mysql.update('item_collect', options, {
+        where: {
+          collect_id: options.collect_id,
+        },
+      });
+    }
+    return await this.app.mysql.insert('item_collect', options);
+  }
 }
 
 module.exports = ItemService;

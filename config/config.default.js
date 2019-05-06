@@ -5,7 +5,7 @@ const path = require('path');
 const ms = require('ms');
 
 module.exports = appInfo => {
-  const config = exports = {};
+  const config = (exports = {});
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + 'b$sh&YB!{?`0U.7dj)+';
@@ -122,12 +122,10 @@ module.exports = appInfo => {
   // 文件储存桶配置
   // 请务必在 config.**.js 中覆盖此配置
   config.cos = {
-    client: {
-      secretId: '',
-      secretKey: '',
-      bucket: 'qiju',
-      region: 'ap-chongqing',
-    },
+    SecretId: '',
+    SecretKey: '',
+    Bucket: 'qiju-1250000000', // Bucket 格式：test-1250000000
+    Region: 'ap-chongqing',
   };
 
   return config;

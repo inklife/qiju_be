@@ -25,6 +25,9 @@ class ItemService extends Service {
     }
     return await this.app.mysql.insert('item_collect', options);
   }
+  async getItemByItemId(item_id) {
+    return await this.app.mysql.get('item_info', { item_id });
+  }
 }
 
 module.exports = ItemService;

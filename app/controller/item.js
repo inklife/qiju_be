@@ -57,6 +57,56 @@ class ItemController extends Controller {
       code: -1,
     };
   }
+  // GET 检查闲置物品是否存在
+  async checkItem() {
+    const { ctx } = this;
+    const { item_id } = ctx.request.body;
+    // 日志输出
+    ctx.logger.info(ctx.request.body);
+    // resp 为本次修改数据库影响行数是否为1行 的逻辑值
+    const resp = await this.service.item.getItemByItemId(item_id);
+    if (resp) {
+      ctx.body = {
+        code: 1,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+    };
+  }
+  // POST 更新闲置物品信息
+  async updateItemInfo() {
+    const { ctx } = this;
+    const { item_id, type, price, item_image, status, used_time, price_discuss, description, title } = ctx.request.body;
+    const user_id = ctx.session.user_id;
+    // 日志输出
+    ctx.logger.info(ctx.request.body);
+    if (item_id) {
+      // resp 为本次修改数据库影响行数是否为1行 的逻辑值
+      const resp = await this.service.item.updateItemInfo({
+        user_id,
+        item_id,
+        type,
+        price,
+        item_image,
+        status,
+        used_time,
+        price_discuss,
+        description,
+        title,
+      });
+      if (resp) {
+        ctx.body = {
+          code: 1,
+        };
+        return;
+      }
+    }
+    ctx.body = {
+      code: -1,
+    };
+  }
 }
 
 module.exports = ItemController;

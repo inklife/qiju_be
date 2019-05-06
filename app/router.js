@@ -43,4 +43,9 @@ module.exports = app => {
   qiju.delete('/house/houseDelete', auth, controller.house.deleteHouse);
   // 判断房屋rent状态
   qiju.get('/house/houseRent', auth, controller.house.getHouseRentStatus);
+  // 检查闲置物品是否存在
+  qiju.get('/house/itemCheck', auth, controller.item.checkItem);
+  // 更新闲置物品信息
+  qiju.post('/user/itemUpdate', auth, controller.item.updateItemInfo);
+
 };

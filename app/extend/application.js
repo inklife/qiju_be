@@ -8,6 +8,7 @@
  */
 'use strict';
 // app/extend/application.js
+const util = require('util');
 const COS_NODEJS_SDK = require('cos-nodejs-sdk-v5');
 
 class COS_V0 extends COS_NODEJS_SDK {
@@ -26,11 +27,8 @@ class COS_V0 extends COS_NODEJS_SDK {
   put(Key, FilePath, options = {}) {
     const Bucket = options.Bucket || this.Bucket;
     const Region = options.Region || this.Region;
-    return new Promise((s, j) => {
-      this.sliceUploadFile({ Bucket, Region, Key, FilePath }, (err, data) => {
-        err ? j(JSON.stringify(err)) : s(data);
-      });
-    });
+    const sliceUploadFile = util.promisify(super.sliceUploadFile).bind(this);
+    return sliceUploadFile({ Bucket, Region, Key, FilePath });
   }
 }
 

@@ -60,9 +60,9 @@ class ItemController extends Controller {
   // GET 检查闲置物品是否存在
   async checkItem() {
     const { ctx } = this;
-    const { item_id } = ctx.request.body;
+    const { item_id } = ctx.query;
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info(ctx.query);
     // resp 为本次修改数据库影响行数是否为1行 的逻辑值
     const resp = await this.service.item.getItemByItemId(item_id);
     if (resp) {

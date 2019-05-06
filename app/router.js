@@ -47,5 +47,7 @@ module.exports = app => {
   qiju.get('/house/itemCheck', auth, controller.item.checkItem);
   // 更新闲置物品信息
   qiju.post('/user/itemUpdate', auth, controller.item.updateItemInfo);
+  // 按 keyword 获得房屋信息
+  qiju.get('/house/houseSearch', auth, controller.house.searchHouseList);
 
 };

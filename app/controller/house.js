@@ -1,5 +1,6 @@
 'use strict';
 const shortid = require('shortid');
+const _ = require('loadsh');
 const Controller = require('egg').Controller;
 
 class HouseController extends Controller {
@@ -83,9 +84,9 @@ class HouseController extends Controller {
   // GET 检查房源是否存在
   async checkHouse() {
     const { ctx } = this;
-    const { house_id } = ctx.request.req;
+    const { house_id } = ctx.query;
     // 日志输出
-    ctx.logger.info(ctx.request.req);
+    ctx.logger.info(ctx.query);
     const resp = await this.service.house.getHouseByHouserId(house_id);
     if (resp) {
       ctx.body = {
@@ -238,11 +239,11 @@ class HouseController extends Controller {
   // GET 判断房屋rent状态
   async getHouseRentStatus() {
     const { ctx } = this;
-    const { house_id } = ctx.request.body;
+    const { house_id } = ctx.query;
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info(ctx.query);
     const resp = await this.service.house.getHouseRentStatus(house_id);
-    if (resp.house_rent_status == 1) {
+    if (resp.house_rent_status === 1) {
       ctx.body = {
         code: 1,
       };
@@ -250,6 +251,34 @@ class HouseController extends Controller {
     }
     ctx.body = {
       code: -1,
+    };
+  }
+  // keyword 搜素 HouseList
+  async searchHouseList() {
+    const { ctx } = this;
+    const keyword = ctx.query.keyword;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    if (_.isEmpty(keyword) || !(/^[\u4e00-\u9fa5a-zA-Z0-9]+$/.test(keyword))) {
+      ctx.body = { code: -1 };
+      return;
+    }
+    // 返回值为 house 列表
+    const resp = await this.service.house.searchHouseList(keyword);
+    if (!resp || !resp.length) {
+      ctx.body = {
+        code: -1,
+        data: {
+          list: [],
+        },
+      };
+      return;
+    }
+    ctx.body = {
+      code: 1,
+      data: {
+        list: resp,
+      },
     };
   }
 }

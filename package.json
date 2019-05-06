@@ -16,6 +16,7 @@
     "egg-session-redis": "^2.1.0",
     "egg-tracer": "^1.1.0",
     "egg-validate": "^2.0.2",
+    "loadsh": "^0.0.4",
     "moment": "^2.24.0",
     "ms": "^2.1.1",
     "qrcode": "^1.3.3",

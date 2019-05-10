@@ -50,4 +50,6 @@ module.exports = app => {
   // 按 keyword 获得房屋信息
   qiju.get('/house/houseSearch', auth, controller.house.searchHouseList);
 
+  // 发送邮件验证码
+  qiju.post('/email/sendvercode', controller.email.SendVerificationCode);
 };

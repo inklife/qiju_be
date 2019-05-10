@@ -7,6 +7,9 @@
  * 本文件对 cos-nodejs-sdk-v5 做了二次扩展
  */
 'use strict';
+const nodemailer = require('nodemailer');
+const nodemailer_API = Symbol('Application#nodemailer_API');
+
 // app/extend/application.js
 const util = require('util');
 const COS_NODEJS_SDK = require('cos-nodejs-sdk-v5');
@@ -42,6 +45,13 @@ module.exports = {
       this[COS_API] = api;
     }
     return this[COS_API];
+  },
+  get email() {
+    if (!this[nodemailer_API]) {
+      const api = nodemailer.createTransport(this.config.email);
+      this[nodemailer_API] = api;
+    }
+    return this[nodemailer_API];
   },
 };
 

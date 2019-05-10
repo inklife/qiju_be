@@ -128,5 +128,17 @@ module.exports = appInfo => {
     Region: 'ap-chongqing',
   };
 
+  // 邮件验证码发件人账号密码配置
+  // 请务必在 config.**.js 中覆盖此配置
+  config.email = {
+    host: 'smtp.exmail.qq.com',
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: '',
+      pass: '',
+    },
+  };
+
   return config;
 };

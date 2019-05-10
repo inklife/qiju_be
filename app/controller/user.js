@@ -34,7 +34,7 @@ class UserController extends Controller {
       ctx.session.TOKEN = TOKEN; // 服务端也存一份吧，（大雾
       ctx.body = {
         // status: 200,
-        code: '1',
+        code: 1,
       };
       // 随手return是个好习惯
       return;
@@ -43,7 +43,7 @@ class UserController extends Controller {
     ctx.body = {
       // 用 `code` 表示状态即可
       // status: 400,
-      code: '-1',
+      code: -1,
       message: '登录失败',
     };
   }
@@ -59,7 +59,7 @@ class UserController extends Controller {
     if (exist) {
       ctx.body = {
         // status: 200,
-        code: '-1',
+        code: -1,
         message: '似乎在哪里见过你',
       };
       return;
@@ -80,7 +80,7 @@ class UserController extends Controller {
     if (resp) {
       ctx.body = {
         // status: 200,
-        code: '1',
+        code: 1,
       };
     }
   }

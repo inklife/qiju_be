@@ -9,6 +9,9 @@ const md5 = _ =>
     .update(_.toString())
     .digest('hex');
 
+const Parameter = require('parameter');
+const Check = new Parameter();
+
 const Controller = require('egg').Controller;
 
 class UserController extends Controller {
@@ -88,15 +91,33 @@ class UserController extends Controller {
   // 前置 AUTH 中间件，确保用户已经登录
   async updateUserPage() {
     const { ctx } = this;
-    const { user_name, email, phone, gender, region } = ctx.request.body;
+    const { user_image, gender, region, user_name } = ctx.request.body;
     const user_id = ctx.session.user_id;
     // 日志输出
     ctx.logger.info(ctx.request.body);
+    const rule = {
+      user_image: { type: 'string', required: true, allowEmpty: false },
+      user_name: { type: 'string', required: true, allowEmpty: false },
+      gender: { type: 'enum', required: true, values: [ 'male', 'female' ] },
+      region: {
+        type: 'enum',
+        required: true,
+        values: [ 'rongchang', 'beibei', 'other' ],
+      },
+    };
+
+    const errors = Check.validate(rule, ctx.request.body);
+    if (errors) {
+      ctx.body = {
+        code: -1,
+        errors,
+      };
+      return;
+    }
     // resp 为本次修改数据库影响行数是否为1行 的逻辑值
     const resp = await this.service.user.updateUserPage(user_id, {
+      user_image,
       user_name,
-      email,
-      phone,
       gender,
       region,
     });
@@ -108,6 +129,7 @@ class UserController extends Controller {
     }
     ctx.body = {
       code: -1,
+      message: '修改失败',
     };
   }
 }

@@ -58,6 +58,7 @@ module.exports = appInfo => {
     key: 'PHP_qiju',
     // domain: '.qiju.art',
     maxAge: ms('6h'),
+    encrypt: true,
   };
 
   config.qiju = {

@@ -28,6 +28,21 @@ class ItemService extends Service {
   async getItemByItemId(item_id) {
     return await this.app.mysql.get('item_info', { item_id });
   }
+  async searchItemList(keyword) {
+    return await this.app.mysql.query(
+      'select * from `item_info` where `type` REGEXP ? OR `title` REGEXP ? OR `description` REGEXP ? limit 100',
+      [ keyword, keyword, keyword ]
+    );
+  }
+  async getItems(options) {
+    if (options.limit === -1) {
+      return await this.app.mysql.query(options.sql);
+    }
+    return await this.app.mysql.query(options.sql, [
+      options.offset,
+      options.limit,
+    ]);
+  }
 }
 
 module.exports = ItemService;

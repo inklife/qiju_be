@@ -178,13 +178,15 @@ class HouseController extends Controller {
     if (page > 0) {
       limit = number > 0 ? number : 0;
       offset = (page - 1) * number;
-      sql = sql + ' LIMIT ' + offset + ',' + limit;
+      sql = sql + ' LIMIT ?,?';
     }
     const resp = await this.service.house.getHouses({ sql, limit, offset });
     if (resp) {
       ctx.body = {
         code: 1,
-        data: resp,
+        data: {
+          list: resp,
+        },
       };
       return;
     }
@@ -253,7 +255,7 @@ class HouseController extends Controller {
       code: -1,
     };
   }
-  // keyword 搜素 HouseList
+  // keyword 搜索 HouseList
   async searchHouseList() {
     const { ctx } = this;
     const keyword = ctx.query.keyword;

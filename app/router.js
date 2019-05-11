@@ -6,13 +6,15 @@
 module.exports = app => {
   const { controller, config } = app;
   const qiju = app.router.namespace(config.qiju.namespace);
-
   // const auth = app.middleware.auth({
   //   prefix: config.qiju.host + `/qiju/${config.apiLevel}/api/auth?redirect=`,
   //   whiteList: new Set([ '' ]),
   //   config,
   // });
+  // 用户鉴权中间件
   const auth = app.middleware.auth();
+  // 图形验证码鉴权中间件
+  const captcha = app.middleware.captcha();
   // 用户登录与注册
   qiju.get('/', controller.home.index);
   qiju.post('/user/login', controller.user.login);
@@ -36,7 +38,11 @@ module.exports = app => {
   // 更新房源信息
   qiju.post('/house/houseUpdate', auth, controller.house.updateHouseInfo);
   // 获取房源按收藏数排序
-  qiju.post('/house/markedRank', auth, controller.house.getHousesByCollectNumber);
+  qiju.post(
+    '/house/markedRank',
+    auth,
+    controller.house.getHousesByCollectNumber
+  );
   // 更新房源评论
   qiju.post('/house/remarkUpdate', auth, controller.house.updateHouseRemark);
   // 删除房屋信息
@@ -49,8 +55,20 @@ module.exports = app => {
   qiju.post('/user/itemUpdate', auth, controller.item.updateItemInfo);
   // 按 keyword 获得房屋信息
   qiju.get('/house/houseSearch', auth, controller.house.searchHouseList);
+<<<<<<< HEAD
   // 按 keyword 搜索物品
   qiju.get('/house/itemSearch', auth, controller.item.searchItemList);
   // 获取物品按收藏数排序
   qiju.get('/item/itemSortByCollect', auth, controller.item.getHousesByCollectNumber);
+=======
+
+  // 发送邮件验证码
+  qiju.post(
+    '/email/sendvercode',
+    captcha,
+    controller.email.SendVerificationCode
+  );
+  // 生成前端图片验证码
+  qiju.get('/security/captcha', controller.security.captcha);
+>>>>>>> 5ae83fe7f10b1c488595a4f9dfe4026b4656e77e
 };

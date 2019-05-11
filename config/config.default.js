@@ -58,6 +58,7 @@ module.exports = appInfo => {
     key: 'PHP_qiju',
     // domain: '.qiju.art',
     maxAge: ms('6h'),
+    encrypt: true,
   };
 
   config.qiju = {
@@ -126,6 +127,18 @@ module.exports = appInfo => {
     SecretKey: '',
     Bucket: 'qiju-1250000000', // Bucket 格式：test-1250000000
     Region: 'ap-chongqing',
+  };
+
+  // 邮件验证码发件人账号密码配置
+  // 请务必在 config.**.js 中覆盖此配置
+  config.email = {
+    host: 'smtp.exmail.qq.com',
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: '',
+      pass: '',
+    },
   };
 
   return config;

@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const Service = require('egg').Service;
 
 class UserService extends Service {
-
   // 返回 -1/1，表示登录 失败/成功
   async login({ email, phone, password }) {
     let user_info;
@@ -17,7 +16,10 @@ class UserService extends Service {
       this.logger.info(`登录失败 - 未找到用户|${email}|${phone}`);
       return { code: -1 };
     }
-    password = crypto.createHmac('sha256', user_info.salt.toString()).update(password.toString()).digest('hex');
+    password = crypto
+      .createHmac('sha256', user_info.salt.toString())
+      .update(password.toString())
+      .digest('hex');
     if (password === user_info.password) {
       this.logger.info(user_info);
       return { code: 1, user_id: user_info.user_id };
@@ -32,10 +34,27 @@ class UserService extends Service {
 
   async register(
     // eslint-disable-next-line no-unused-vars
-    user_id, password, salt, email, phone, gender, region
+    user_id,
+    password,
+    salt,
+    email,
+    phone,
+    gender,
+    region
   ) {
-    password = crypto.createHmac('sha256', salt.toString()).update(password.toString()).digest('hex');
-    return await this.app.mysql.insert('user_info', { user_id, password, salt, email, phone, gender, region });
+    password = crypto
+      .createHmac('sha256', salt.toString())
+      .update(password.toString())
+      .digest('hex');
+    return await this.app.mysql.insert('user_info', {
+      user_id,
+      password,
+      salt,
+      email,
+      phone,
+      gender,
+      region,
+    });
   }
 
   async checkUserDuplicate({ email }) {
@@ -43,23 +62,20 @@ class UserService extends Service {
     return !!user;
   }
   // 更新用户资料
-  async updateUserPage(user_id, {
-    user_name,
-    email,
-    phone,
-    gender,
-    region,
-  }) {
+  async updateUserPage(user_id, { user_image, user_name, gender, region }) {
     const options = {
       where: { user_id },
     };
-    const result = await this.app.mysql.update('user_info', {
-      user_name,
-      email,
-      phone,
-      gender,
-      region,
-    }, options); // 更新 posts 表中的记录
+    const result = await this.app.mysql.update(
+      'user_info',
+      {
+        user_image,
+        user_name,
+        gender,
+        region,
+      },
+      options
+    ); // 更新 posts 表中的记录
     return result.affectedRows === 1;
   }
 }

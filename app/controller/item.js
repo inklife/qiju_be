@@ -137,11 +137,11 @@ class ItemController extends Controller {
     };
   }
   // 获取物品按收藏数排序
-  async getHousesByCollectNumber() {
+  async getItemsByCollectNumber() {
     const { ctx } = this;
-    const { page, number } = ctx.request.body;
+    const { page, number } = ctx.request.query;
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info(ctx.request.query);
     let sql = `SELECT
     *,
     IFNULL( t_collect_count, 0 ) AS collect_count 
@@ -164,6 +164,40 @@ class ItemController extends Controller {
         data: {
           list: resp,
         },
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+    };
+  }
+  // GET 判断闲置物品是否出售
+  async itemHasSold() {
+    const { ctx } = this;
+    const { item_id } = ctx.request.query;
+    // 日志输出
+    ctx.logger.info(ctx.request.query);
+    const resp = await this.service.item.getItemStatus(item_id);
+    if (resp && resp.status == 1) {
+      ctx.body = {
+        code: 1,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+    };
+  }
+  // GET 删除闲置物品
+  async deleteItem() {
+    const { ctx } = this;
+    const { item_id } = ctx.request.query;
+    // 日志输出
+    ctx.logger.info(ctx.request.query);
+    const resp = await this.service.item.deleteItem(item_id);
+    if (resp) {
+      ctx.body = {
+        code: 1,
       };
       return;
     }

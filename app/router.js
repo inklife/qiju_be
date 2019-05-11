@@ -55,13 +55,14 @@ module.exports = app => {
   qiju.post('/user/itemUpdate', auth, controller.item.updateItemInfo);
   // 按 keyword 获得房屋信息
   qiju.get('/house/houseSearch', auth, controller.house.searchHouseList);
-<<<<<<< HEAD
   // 按 keyword 搜索物品
   qiju.get('/house/itemSearch', auth, controller.item.searchItemList);
   // 获取物品按收藏数排序
-  qiju.get('/item/itemSortByCollect', auth, controller.item.getHousesByCollectNumber);
-=======
-
+  qiju.get('/item/itemSortByCollect', auth, controller.item.getItemsByCollectNumber);
+  // 判断闲置物品是否出售
+  qiju.get('/item/hasSold', auth, controller.item.itemHasSold);
+  // 删除闲置物品
+  qiju.get('/item/deleteItem', auth, controller.item.deleteItem);
   // 发送邮件验证码
   qiju.post(
     '/email/sendvercode',
@@ -70,5 +71,4 @@ module.exports = app => {
   );
   // 生成前端图片验证码
   qiju.get('/security/captcha', controller.security.captcha);
->>>>>>> 5ae83fe7f10b1c488595a4f9dfe4026b4656e77e
 };

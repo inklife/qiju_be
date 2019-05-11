@@ -43,6 +43,12 @@ class ItemService extends Service {
       options.limit,
     ]);
   }
+  async getItemStatus(item_id) {
+    return await this.app.mysql.get('item_info', { item_id });
+  }
+  async deleteItem(item_id) {
+    return await this.app.mysql.delete('item_info', { item_id });
+  }
 }
 
 module.exports = ItemService;

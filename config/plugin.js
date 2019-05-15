@@ -31,6 +31,11 @@ module.exports = {
     enable: true,
     package: 'egg-router-plus',
   },
+  // {app_root}/config/plugin.js
+  cos: {
+    enable: true,
+    package: '@shuang6/egg-cos',
+  },
   // multipart: {
   //   enable: true,
   //   package: 'egg-multipart',

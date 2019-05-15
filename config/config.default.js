@@ -123,10 +123,12 @@ module.exports = appInfo => {
   // 文件储存桶配置
   // 请务必在 config.**.js 中覆盖此配置
   config.cos = {
-    SecretId: '',
-    SecretKey: '',
-    Bucket: 'qiju-1250000000', // Bucket 格式：test-1250000000
-    Region: 'ap-chongqing',
+    client: {
+      SecretId: '',
+      SecretKey: '',
+      Bucket: '',
+      Region: '',
+    },
   };
 
   // 邮件验证码发件人账号密码配置

@@ -18,7 +18,7 @@ class UserController extends Controller {
   // POST 登录
   async login() {
     const { ctx } = this;
-    const { email, phone, password } = ctx.request.body;
+    const { email, phone, password, rememberme } = ctx.request.body;
     // 日志输出
     ctx.logger.info(ctx.request.body);
     // TODO 参数校验
@@ -30,13 +30,21 @@ class UserController extends Controller {
     if (code === 1) {
       // 设置登录成功的Cookies
       const DIGKEY = `${Math.random()}`.slice(-6); // 用来混淆的key，存在服务端
-      ctx.session.user_id = user_id; // 记下user_id
-      ctx.session.DIGKEY = DIGKEY;
       const TOKEN = md5(user_id + DIGKEY); // 用来鉴权的TOKEN，存在客户端
-      ctx.cookies.set('TOKEN', TOKEN, { maxAge: ms('6h') });
-      ctx.session.TOKEN = TOKEN; // 服务端也存一份吧，（大雾
+      if (rememberme === true) {
+        // 如果勾选记住我，session有效期延长至7天
+        ctx.session.maxAge = ms('7d');
+        ctx.session.user_id = user_id; // 记下user_id
+        ctx.session.DIGKEY = DIGKEY;
+        ctx.cookies.set('TOKEN', TOKEN, { maxAge: ms('7d') });
+        ctx.session.TOKEN = TOKEN; // 服务端也存一份吧，（大雾
+      } else {
+        ctx.session.user_id = user_id; // 记下user_id
+        ctx.session.DIGKEY = DIGKEY;
+        ctx.cookies.set('TOKEN', TOKEN, { maxAge: ms('6h') });
+        ctx.session.TOKEN = TOKEN; // 服务端也存一份吧，（大雾
+      }
       ctx.body = {
-        // status: 200,
         code: 1,
       };
       // 随手return是个好习惯
@@ -45,7 +53,6 @@ class UserController extends Controller {
     // 登录失败
     ctx.body = {
       // 用 `code` 表示状态即可
-      // status: 400,
       code: -1,
       message: '登录失败',
     };
@@ -61,7 +68,6 @@ class UserController extends Controller {
     // console.log(exist);
     if (exist) {
       ctx.body = {
-        // status: 200,
         code: -1,
         message: '似乎在哪里见过你',
       };

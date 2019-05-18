@@ -7,7 +7,15 @@ class HouseController extends Controller {
   // POST 上传房源信息
   async uploadHouseInfo() {
     const { ctx } = this;
-    const { region, address, price, pet, facility, house_image, house_rent_staus } = ctx.request.body;
+    const {
+      region,
+      address,
+      price,
+      pet,
+      facility,
+      house_image,
+      house_rent_staus,
+    } = ctx.request.body;
     const user_id = ctx.session.user_id;
     const house_id = shortid.generate();
     // 日志输出
@@ -58,7 +66,7 @@ class HouseController extends Controller {
       code: -1,
     };
   }
-  // PATCH 收藏房源
+  // POST 收藏房源
   async favouriteHouse() {
     const { ctx } = this;
     const { house_id } = ctx.request.body;
@@ -101,7 +109,16 @@ class HouseController extends Controller {
   // POST 更改房源信息
   async updateHouseInfo() {
     const { ctx } = this;
-    const { house_id, region, address, price, pet, facility, house_image, house_rent_staus } = ctx.request.body;
+    const {
+      house_id,
+      region,
+      address,
+      price,
+      pet,
+      facility,
+      house_image,
+      house_rent_staus,
+    } = ctx.request.body;
     const user_id = ctx.session.user_id;
     // 日志输出
     ctx.logger.info(ctx.request.body);
@@ -132,14 +149,20 @@ class HouseController extends Controller {
   // 获取房源按收藏数排序
   async getHousesByCollectNumber() {
     const { ctx } = this;
-    const { region, address, price, pet, facility, house_rent_staus, page, number } = ctx.request.body;
+    const {
+      region,
+      address,
+      price,
+      pet,
+      facility,
+      house_rent_staus,
+      page,
+      number,
+    } = ctx.request.body;
     // 日志输出
     ctx.logger.info(ctx.request.body);
-    let sql = `SELECT
-    *,
-    IFNULL( t_collect_count, 0 ) AS collect_count 
-  FROM
-    (
+    // TODO 过滤不安全字符
+    let sql = `
     SELECT
       h.house_id,
       h.user_id,
@@ -149,13 +172,13 @@ class HouseController extends Controller {
       h.pet,
       h.facility,
       h.house_image,
-      h.house_rent_staus 
+      h.house_rent_staus,
+      house_collect_sta.collect_times
     FROM
       house_info AS h 
-    WHERE
-      !ISNULL(h.house_id)`;
+    WHERE 1=1`;
     if (region) {
-      sql = sql + 'AND h.region = ' + region + ' ';
+      sql += 'AND h.region = ' + region + ' ';
     }
     if (address) {
       sql = sql + 'AND h.address = ' + address + ' ';
@@ -172,7 +195,45 @@ class HouseController extends Controller {
     if (house_rent_staus) {
       sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
     }
-    sql = sql + ') AS h LEFT JOIN ( SELECT c.house_id, COUNT( * ) t_collect_count FROM house_collect AS c GROUP BY c.house_id ) t ON h.house_id = t.house_id ORDER BY collect_count DESC';
+    sql += 'LEFT JOIN  house_collect_sta ON h.house_id = house_collect_sta.house_id ORDER BY collect_times DESC';
+    //   let sql = `SELECT
+    //   *,
+    //   IFNULL( t_collect_count, 0 ) AS collect_count
+    // FROM
+    //   (
+    //   SELECT
+    //     h.house_id,
+    //     h.user_id,
+    //     h.region,
+    //     h.address,
+    //     h.price,
+    //     h.pet,
+    //     h.facility,
+    //     h.house_image,
+    //     h.house_rent_staus
+    //   FROM
+    //     house_info AS h
+    //   WHERE
+    //     !ISNULL(h.house_id)`;
+    //   if (region) {
+    //     sql = sql + 'AND h.region = ' + region + ' ';
+    //   }
+    //   if (address) {
+    //     sql = sql + 'AND h.address = ' + address + ' ';
+    //   }
+    //   if (price) {
+    //     sql = sql + 'AND h.price = ' + price + ' ';
+    //   }
+    //   if (pet) {
+    //     sql = sql + 'AND h.pet = ' + pet + ' ';
+    //   }
+    //   if (facility) {
+    //     sql = sql + 'AND h.facility = ' + facility + ' ';
+    //   }
+    //   if (house_rent_staus) {
+    //     sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
+    //   }
+    //   sql = sql + ') AS h LEFT JOIN ( SELECT c.house_id, COUNT( * ) t_collect_count FROM house_collect AS c GROUP BY c.house_id ) t ON h.house_id = t.house_id ORDER BY collect_count DESC';
     let limit = -1;
     let offset = 0;
     if (page > 0) {
@@ -261,7 +322,7 @@ class HouseController extends Controller {
     const keyword = ctx.query.keyword;
     // 日志输出
     ctx.logger.info(ctx.query);
-    if (_.isEmpty(keyword) || !(/^[\u4e00-\u9fa5a-zA-Z0-9]+$/.test(keyword))) {
+    if (_.isEmpty(keyword) || !/^[\u4e00-\u9fa5a-zA-Z0-9]+$/.test(keyword)) {
       ctx.body = { code: -1 };
       return;
     }

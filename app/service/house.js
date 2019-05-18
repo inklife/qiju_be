@@ -33,19 +33,45 @@ class HouseService extends Service {
     }
     return await this.app.mysql.insert('house_remark', options);
   }
-  // 添加/更新收藏房源
+  // 收藏/取消收藏 房源
   async updateFavouriteHouse(options) {
+    const { ctx, app } = this;
     if (options.collect_id) {
       const collect = await this.app.mysql.get('house_collect', {
         collect_id: options.collect_id,
       });
+      // 如果已收藏，走取消收藏的逻辑
       if (collect) {
-        return await this.app.mysql.delete('house_collect', {
-          collect_id: options.collect_id,
-        });
+        // eslint-disable-next-line no-unused-vars
+        return await app.mysql.beginTransactionScope(async conn => {
+          await app.mysql.delete('house_collect', {
+            collect_id: options.collect_id,
+          });
+          const house_sta = await app.mysql.get('house_collect_sta', {
+            house_id: options.house_id,
+          });
+          if (house_sta) {
+            // 收藏次数 -1
+            await app.mysql.query(
+              'update house_collect_sta set collect_times=collect_times-1 where house_id=?;',
+              options.house_id
+            );
+          }
+          return { success: true };
+        }, ctx);
       }
+      // 如果未收藏，走收藏的逻辑
+      // eslint-disable-next-line no-unused-vars
+      return await app.mysql.beginTransactionScope(async conn => {
+        await app.mysql.insert('house_collect', options);
+        // 收藏次数 +1
+        await app.mysql.query(
+          'INSERT INTO house_collect_sta(house_id,collect_times) VALUES (?,1) ON DUPLICATE KEY UPDATE collect_times=collect_times+1;',
+          options.house_id
+        );
+        return { success: true };
+      }, ctx);
     }
-    return await this.app.mysql.insert('house_collect', options);
   }
   // 通过house_id获取房屋信息
   async getHouseByHouserId(house_id) {

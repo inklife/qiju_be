@@ -195,7 +195,8 @@ class HouseController extends Controller {
     if (house_rent_staus) {
       sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
     }
-    sql += 'LEFT JOIN  house_collect_sta ON h.house_id = house_collect_sta.house_id ORDER BY collect_times DESC';
+    sql +=
+      'LEFT JOIN  house_collect_sta ON h.house_id = house_collect_sta.house_id ORDER BY collect_times DESC';
     //   let sql = `SELECT
     //   *,
     //   IFNULL( t_collect_count, 0 ) AS collect_count
@@ -233,7 +234,9 @@ class HouseController extends Controller {
     //   if (house_rent_staus) {
     //     sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
     //   }
-    //   sql = sql + ') AS h LEFT JOIN ( SELECT c.house_id, COUNT( * ) t_collect_count FROM house_collect AS c GROUP BY c.house_id ) t ON h.house_id = t.house_id ORDER BY collect_count DESC';
+    //   sql = sql + ') AS h LEFT JOIN ( SELECT c.house_id, COUNT( * )
+    // t_collect_count FROM house_collect AS c GROUP BY c.house_id ) t ON h.house_id = t.house_id
+    // ORDER BY collect_count DESC';
     let limit = -1;
     let offset = 0;
     if (page > 0) {
@@ -341,6 +344,22 @@ class HouseController extends Controller {
       code: 1,
       data: {
         list: resp,
+      },
+    };
+  }
+  // 获取最近上新的
+  async getRecentHouse() {
+    const { ctx } = this;
+    const query = ctx.query;
+    ctx.logger.info(query);
+    const user_id = ctx.session.user_id;
+    // 返回最近上新的列表
+    const resp = await this.service.house.getRecentHouse(user_id);
+    ctx.body = {
+      code: 1,
+      data: {
+        list: resp,
+        online: !!user_id,
       },
     };
   }

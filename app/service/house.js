@@ -63,10 +63,14 @@ class HouseService extends Service {
       // 如果未收藏，走收藏的逻辑
       // eslint-disable-next-line no-unused-vars
       return await app.mysql.beginTransactionScope(async conn => {
-        await app.mysql.insert('house_collect', options);
+        await app.mysql.insert('house_collect', {
+          ...options,
+          house_collect_status: 1,
+        });
         // 收藏次数 +1
         await app.mysql.query(
-          'INSERT INTO house_collect_sta(house_id,collect_times) VALUES (?,1) ON DUPLICATE KEY UPDATE collect_times=collect_times+1;',
+          'INSERT INTO house_collect_sta(house_id,collect_times) VALUES (?,1)' +
+            ' ON DUPLICATE KEY UPDATE collect_times=collect_times+1;',
           options.house_id
         );
         return { success: true };
@@ -105,6 +109,18 @@ class HouseService extends Service {
     return await this.app.mysql.query(
       'select * from `house_info` where `address` REGEXP ? OR `facility` REGEXP ? limit 100',
       [ keyword, keyword ]
+    );
+  }
+
+  async getRecentHouse(user_id) {
+    if (user_id) {
+      return await this.app.mysql.query(
+        'select h.*, house_collect.house_collect_status from house_info as h left join' +
+          ' house_collect on h.house_id=house_collect.house_id ORDER BY h.create_time DESC LIMIT 6'
+      );
+    }
+    return await this.app.mysql.query(
+      'select * from house_info as h ORDER BY h.create_time DESC LIMIT 6'
     );
   }
 }

@@ -71,4 +71,6 @@ module.exports = app => {
   );
   // 生成前端图片验证码
   qiju.get('/security/captcha', controller.security.captcha);
+  // 最近上新
+  qiju.get('/house/recent', controller.house.getRecentHouse);
 };

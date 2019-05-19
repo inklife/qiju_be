@@ -117,7 +117,9 @@ class HouseService extends Service {
     if (user_id) {
       return await this.app.mysql.query(
         'select h.*, house_collect.house_collect_status from house_info as h left join' +
-          ' house_collect on h.house_id=house_collect.house_id ORDER BY h.create_time DESC LIMIT 6'
+          ' house_collect on h.house_id=house_collect.house_id AND house_collect.user_id=?' +
+          '  ORDER BY h.create_time DESC LIMIT 6',
+        [ user_id ]
       );
     }
     return await this.app.mysql.query(

@@ -38,14 +38,15 @@ class HouseService extends Service {
     const { ctx, app } = this;
     if (options.collect_id) {
       const collect = await this.app.mysql.get('house_collect', {
-        collect_id: options.collect_id,
+        user_id: options.user_id,
+        house_id: options.house_id,
       });
       // 如果已收藏，走取消收藏的逻辑
       if (collect) {
         // eslint-disable-next-line no-unused-vars
         return await app.mysql.beginTransactionScope(async conn => {
           await app.mysql.delete('house_collect', {
-            collect_id: options.collect_id,
+            collect_id: collect.collect_id,
           });
           const house_sta = await app.mysql.get('house_collect_sta', {
             house_id: options.house_id,

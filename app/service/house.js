@@ -116,15 +116,17 @@ class HouseService extends Service {
   async getRecentHouse(user_id) {
     if (user_id) {
       return await this.app.mysql.query(
-        'select h.*, house_collect.house_collect_status, IFNULL(house_collect_sta.collect_times, 0)' +
-          ' as collect_number from (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
+        // 'select h.*, house_collect.house_collect_status, IFNULL(house_collect_sta.collect_times, 0)' +
+        //   ' as collect_number from (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
+        'select h.*, house_collect.house_collect_status, house_collect_sta.collect_times' +
+          ' from (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
           ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id' +
           ' LEFT JOIN house_collect on h.house_id=house_collect.house_id AND house_collect.user_id=?;',
         [ user_id ]
       );
     }
     return await this.app.mysql.query(
-      'select h.*, IFNULL(house_collect_sta.collect_times, 0) as collect_number from' +
+      'select h.*, house_collect_sta.collect_times from' +
         ' (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
         ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id;'
     );

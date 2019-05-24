@@ -80,7 +80,11 @@ class HouseService extends Service {
   }
   // 通过house_id获取房屋信息
   async getHouseByHouserId(house_id) {
-    return await this.app.mysql.get('house_info', { house_id });
+    const house = await this.app.mysql.get('house_info', { house_id });
+    if (typeof house.house_image === 'string') {
+      house.house_image = house.house_image.split('|');
+    }
+    return house;
   }
   async getHouses(options) {
     if (options.limit === -1) {
@@ -112,24 +116,55 @@ class HouseService extends Service {
       [ keyword, keyword ]
     );
   }
-
+  // 获取最近上新
   async getRecentHouse(user_id) {
     if (user_id) {
-      return await this.app.mysql.query(
+      const houseList = await this.app.mysql.query(
         // 'select h.*, house_collect.house_collect_status, IFNULL(house_collect_sta.collect_times, 0)' +
         //   ' as collect_number from (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
-        'select h.*, house_collect.house_collect_status, house_collect_sta.collect_times' +
-          ' from (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
+        'select h.*, house_collect.house_collect_status, house_collect_sta.collect_times from' +
+          ' (select * from house_info where house_rent_status=1 ORDER BY create_time DESC LIMIT 6)' +
           ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id' +
           ' LEFT JOIN house_collect on h.house_id=house_collect.house_id AND house_collect.user_id=?;',
         [ user_id ]
       );
+      if (houseList) {
+        houseList.forEach(house => {
+          if (typeof house.house_image === 'string') {
+            house.house_image = house.house_image.split('|');
+          }
+        });
+      }
+      return houseList;
     }
-    return await this.app.mysql.query(
+    const houseList = await this.app.mysql.query(
       'select h.*, house_collect_sta.collect_times from' +
-        ' (select * from house_info ORDER BY house_info.create_time DESC LIMIT 6)' +
+        ' (select * from house_info where house_rent_status=1 ORDER BY create_time DESC LIMIT 6)' +
         ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id;'
     );
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
+  }
+  // 根据house_id获取某一房源相关信息及联系方式
+  async accessOneHouse(house_id) {
+    let house = await this.app.mysql.query(
+      'select h.*,phone,wechat,qq from house_info h' +
+        ' LEFT JOIN user_info ON h.user_id=user_info.user_id where h.house_id=?;',
+      house_id
+    );
+    if (house.length) {
+      house = house[0];
+    }
+    if (typeof house.house_image === 'string') {
+      house.house_image = house.house_image.split('|');
+    }
+    return house;
   }
 }
 

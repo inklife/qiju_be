@@ -363,6 +363,44 @@ class HouseController extends Controller {
       },
     };
   }
+  // 根据id获取房源
+  async profile() {
+    const { ctx } = this;
+    const { house_id } = ctx.query;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    const resp = await this.service.house.getHouseByHouserId(house_id);
+    if (resp) {
+      ctx.body = {
+        code: 1,
+        data: resp,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+      message: '未找到房源',
+    };
+  }
+  // 获取房源相关信息及联系方式
+  async accessOneHouse() {
+    const { ctx } = this;
+    const { house_id } = ctx.query;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    const resp = await this.service.house.accessOneHouse(house_id);
+    if (resp) {
+      ctx.body = {
+        code: 1,
+        data: resp,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+      message: '未找到房源',
+    };
+  }
 }
 
 module.exports = HouseController;

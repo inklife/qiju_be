@@ -20,7 +20,7 @@ class UserController extends Controller {
     const { ctx } = this;
     const { email, phone, password, rememberme } = ctx.request.body;
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info({ email, phone, rememberme });
     // TODO 参数校验
     const { code, user_id } = await this.service.user.login({
       email,

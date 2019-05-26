@@ -79,6 +79,22 @@ class UserController extends Controller {
       code: 1,
     };
   }
+  // 返回在线用户user_id
+  async online() {
+    const { ctx } = this;
+    if (ctx.session.user_id) {
+      ctx.body = {
+        code: 1,
+        data: {
+          user_id: ctx.session.user_id,
+        },
+      };
+    } else {
+      ctx.body = {
+        code: -1,
+      };
+    }
+  }
   // POST 注册
   async register() {
     const { ctx } = this;

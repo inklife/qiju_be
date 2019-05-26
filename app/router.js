@@ -20,7 +20,9 @@ module.exports = app => {
   qiju.post('/user/login', controller.user.login);
   // 登出
   qiju.get('/user/logout', controller.user.logout);
-
+  // 判断用户是否在线
+  qiju.get('/user/online', auth, controller.user.online);
+  // 注册
   qiju.post('/user/register', controller.user.register);
   // 更新用户个人信息
   qiju.post('/user/user_page', auth, controller.user.updateUserPage);

@@ -49,7 +49,7 @@ module.exports = app => {
   // 更新房源信息
   qiju.post('/house/houseUpdate', auth, controller.house.updateHouseInfo);
   // 获取房源按收藏数排序
-  qiju.post(
+  qiju.get(
     '/house/markedRank',
     auth,
     controller.house.getHousesByCollectNumber

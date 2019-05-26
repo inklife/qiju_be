@@ -18,6 +18,9 @@ module.exports = app => {
   // 用户登录与注册
   qiju.get('/', controller.home.index);
   qiju.post('/user/login', controller.user.login);
+  // 登出
+  qiju.get('/user/logout', controller.user.logout);
+
   qiju.post('/user/register', controller.user.register);
   // 更新用户个人信息
   qiju.post('/user/user_page', auth, controller.user.updateUserPage);
@@ -64,7 +67,11 @@ module.exports = app => {
   // 按 keyword 搜索物品
   qiju.get('/house/itemSearch', auth, controller.item.searchItemList);
   // 获取物品按收藏数排序
-  qiju.get('/item/itemSortByCollect', auth, controller.item.getItemsByCollectNumber);
+  qiju.get(
+    '/item/itemSortByCollect',
+    auth,
+    controller.item.getItemsByCollectNumber
+  );
   // 判断闲置物品是否出售
   qiju.get('/item/hasSold', auth, controller.item.itemHasSold);
   // 删除闲置物品

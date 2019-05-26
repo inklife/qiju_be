@@ -57,6 +57,28 @@ class UserController extends Controller {
       message: '登录失败',
     };
   }
+  // GET 登出
+  async logout() {
+    const { ctx } = this;
+    if (ctx.session.user_id) {
+      delete ctx.session.user_id;
+    } else {
+      ctx.body = {
+        code: 1,
+      };
+      return;
+    }
+    if (ctx.session.DIGKEY) {
+      delete ctx.session.DIGKEY;
+    }
+    if (ctx.session.TOKEN) {
+      delete ctx.session.TOKEN;
+    }
+    ctx.logger.info('登出成功');
+    ctx.body = {
+      code: 1,
+    };
+  }
   // POST 注册
   async register() {
     const { ctx } = this;

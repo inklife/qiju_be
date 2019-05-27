@@ -117,7 +117,7 @@ class HouseController extends Controller {
   // POST 更改房源信息
   async updateHouseInfo() {
     const { ctx } = this;
-    const {
+    let {
       house_id,
       region,
       address,
@@ -126,8 +126,14 @@ class HouseController extends Controller {
       facility,
       house_image,
       price_discuss,
-      // house_rent_status,
+      house_rent_status,
     } = ctx.request.body;
+    if (Array.isArray(house_image)) {
+      house_image = house_image.join('|');
+    }
+    if (!house_rent_status) {
+      house_rent_status = 1;
+    }
     const user_id = ctx.session.user_id;
     // 日志输出
     ctx.logger.info(ctx.request.body);
@@ -143,7 +149,7 @@ class HouseController extends Controller {
         facility,
         house_image,
         price_discuss,
-        // house_rent_status,
+        house_rent_status,
       });
       if (resp) {
         ctx.body = {
@@ -490,6 +496,30 @@ class HouseController extends Controller {
     ctx.body = {
       code: -1,
       message: '未找到房源',
+    };
+  }
+  // 获取本人发布的所有房源
+  async getAllMyHouse() {
+    const { ctx } = this;
+    const { user_id } = ctx.session;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    const resp = await this.service.house.getAllMyHouse(user_id);
+    if (resp && resp.length) {
+      ctx.body = {
+        code: 1,
+        data: {
+          list: resp,
+        },
+      };
+      return;
+    }
+    ctx.body = {
+      code: 1,
+      data: {
+        list: [],
+      },
+      message: '您好像还没有发布房源，快去创建一个吧 b(￣▽￣)d',
     };
   }
 }

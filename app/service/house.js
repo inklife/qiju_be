@@ -246,11 +246,23 @@ class HouseService extends Service {
   // 拉取房源评价
   async getHouseRemarks(house_id) {
     return await this.app.mysql.query(
-      'select house_remark.remark_content,user_info.user_name from house_remark' +
-        ' left join user_info on house_remark.user_id=user_info.user_id' +
+      'select house_remark.remark_content,user_info.user_name,user_info.user_id' +
+        ' from house_remark left join user_info on house_remark.user_id=user_info.user_id' +
         ' where house_remark.house_id=? ORDER BY house_remark.create_time DESC',
       house_id
     );
+  }
+  // 获取本人发布的所有房源
+  async getAllMyHouse(user_id) {
+    const houseList = await this.app.mysql.query('select * from house_info where user_id=?', user_id);
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
   }
 }
 

@@ -36,7 +36,9 @@ module.exports = app => {
   qiju.post('/house/remarkCreate', auth, controller.house.createHouseRemark);
   // 收藏房源
   qiju.post('/user/collectHouse', auth, controller.house.favouriteHouse);
-  // 根据id获取房源信息
+  // 获取我创建的房源
+  qiju.get('/user/getAllMyHouse', auth, controller.house.getAllMyHouse);
+  // 根据house_id获取房源信息
   qiju.get('/house/profile', auth, controller.house.profile);
 
   // 获得房源信息及联系方式

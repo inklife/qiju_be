@@ -102,6 +102,14 @@ class ItemController extends Controller {
     // 日志输出
     ctx.logger.info(ctx.request.body);
     if (item_id) {
+      const item = await this.service.item.getItemByItemId(item_id);
+      if (!item || item.user_id !== user_id) {
+        ctx.body = {
+          code: -1,
+          message: '似乎这个不是您的物品',
+        };
+        return;
+      }
       // resp 为本次修改数据库影响行数是否为1行 的逻辑值
       const resp = await this.service.item.updateItemInfo({
         user_id,

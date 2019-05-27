@@ -87,14 +87,24 @@ class HouseService extends Service {
     return house;
   }
   async getHouses(options) {
+    let houseList;
     if (options.limit === -1) {
-      return await this.app.mysql.query(options.sql);
+      houseList = await this.app.mysql.query(options.sql);
     }
-    return await this.app.mysql.query(options.sql, [
-      options.offset,
+    houseList = await this.app.mysql.query(options.sql, [
       options.limit,
+      options.offset,
     ]);
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
   }
+
   async deleteHouse(options) {
     await this.app.mysql.delete('house_info', { house_id: options.house_id });
     await this.app.mysql.delete('house_remark', { house_id: options.house_id });

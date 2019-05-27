@@ -149,101 +149,55 @@ class HouseController extends Controller {
   // 获取房源按收藏数排序
   async getHousesByCollectNumber() {
     const { ctx } = this;
-    const {
+    let {
       region,
       address,
-      price,
       pet,
       facility,
       house_rent_staus,
       page,
       number,
-    } = ctx.request.body;
+    } = ctx.query;
+    if (/\d+/.test(page)) {
+      page = Number(page);
+    }
+    if (!Number.isInteger(page)) {
+      page = 1;
+      ctx.logger.info('页数为空或不是整数');
+    }
+    if (!number) {
+      number = 6;
+    }
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info(ctx.query);
     // TODO 过滤不安全字符
-    let sql = `
-    SELECT
-      h.house_id,
-      h.user_id,
-      h.region,
-      h.address,
-      h.price,
-      h.pet,
-      h.facility,
-      h.house_image,
-      h.house_rent_staus,
-      house_collect_sta.collect_times
-    FROM
-      house_info AS h 
-    WHERE 1=1`;
+    let sql =
+      'select h.*, IFNULL(house_collect_sta.collect_times, 0) as collect_times from  house_info as h ' +
+      ' LEFT JOIN  house_collect_sta ON h.house_id = house_collect_sta.house_id where 1=1 ';
     if (region) {
-      sql += 'AND h.region = ' + region + ' ';
+      sql += 'AND region = ' + region + ' ';
     }
     if (address) {
-      sql = sql + 'AND h.address = ' + address + ' ';
-    }
-    if (price) {
-      sql = sql + 'AND h.price = ' + price + ' ';
+      sql = sql + 'AND address = ' + address + ' ';
     }
     if (pet) {
-      sql = sql + 'AND h.pet = ' + pet + ' ';
+      sql = sql + 'AND pet = ' + pet + ' ';
     }
     if (facility) {
-      sql = sql + 'AND h.facility = ' + facility + ' ';
+      sql = sql + 'AND facility = ' + facility + ' ';
     }
     if (house_rent_staus) {
-      sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
+      sql = sql + 'AND house_rent_staus = ' + house_rent_staus + ' ';
     }
-    sql +=
-      'LEFT JOIN  house_collect_sta ON h.house_id = house_collect_sta.house_id ORDER BY collect_times DESC';
-    //   let sql = `SELECT
-    //   *,
-    //   IFNULL( t_collect_count, 0 ) AS collect_count
-    // FROM
-    //   (
-    //   SELECT
-    //     h.house_id,
-    //     h.user_id,
-    //     h.region,
-    //     h.address,
-    //     h.price,
-    //     h.pet,
-    //     h.facility,
-    //     h.house_image,
-    //     h.house_rent_staus
-    //   FROM
-    //     house_info AS h
-    //   WHERE
-    //     !ISNULL(h.house_id)`;
-    //   if (region) {
-    //     sql = sql + 'AND h.region = ' + region + ' ';
-    //   }
-    //   if (address) {
-    //     sql = sql + 'AND h.address = ' + address + ' ';
-    //   }
-    //   if (price) {
-    //     sql = sql + 'AND h.price = ' + price + ' ';
-    //   }
-    //   if (pet) {
-    //     sql = sql + 'AND h.pet = ' + pet + ' ';
-    //   }
-    //   if (facility) {
-    //     sql = sql + 'AND h.facility = ' + facility + ' ';
-    //   }
-    //   if (house_rent_staus) {
-    //     sql = sql + 'AND h.house_rent_staus = ' + house_rent_staus + ' ';
-    //   }
-    //   sql = sql + ') AS h LEFT JOIN ( SELECT c.house_id, COUNT( * )
-    // t_collect_count FROM house_collect AS c GROUP BY c.house_id ) t ON h.house_id = t.house_id
-    // ORDER BY collect_count DESC';
+    sql += 'ORDER BY collect_times DESC';
     let limit = -1;
     let offset = 0;
     if (page > 0) {
       limit = number > 0 ? number : 0;
       offset = (page - 1) * number;
-      sql = sql + ' LIMIT ?,?';
+      sql = sql + ' LIMIT ? OFFSET ?';
     }
+    console.log({ sql, limit, offset });
     const resp = await this.service.house.getHouses({ sql, limit, offset });
     if (resp) {
       ctx.body = {

@@ -39,7 +39,22 @@ module.exports = app => {
   // 获取我创建的房源
   qiju.get('/user/getAllMyHouse', auth, controller.house.getAllMyHouse);
   // 获取我收藏的房源
-  qiju.get('/user/getAllMyCollectHouse', auth, controller.house.getAllMyCollectHouse);
+  qiju.get(
+    '/user/getAllMyCollectHouse',
+    auth,
+    controller.house.getAllMyCollectHouse
+  );
+  // 获取的本人发布的闲置物品
+  qiju.get('/user/getAllMyIdleItem', auth, controller.item.getAllMyIdleItem);
+  // 获取的本人收藏的闲置物品
+  qiju.get(
+    '/user/getAllMyCollectIdleItem',
+    auth,
+    controller.item.getAllMyCollectIdleItem
+  );
+  // // 根据闲置物品id获得 所属这
+  // qiju.get('/user/getAllMyIdleItem', auth, controller.item.getAllMyIdleItem);
+
   // 根据house_id获取房源信息
   qiju.get('/house/profile', auth, controller.house.profile);
 
@@ -50,6 +65,9 @@ module.exports = app => {
   qiju.post('/user/itemEdit', auth, controller.item.uploadItemInfo);
   // 收藏闲置物品
   qiju.post('/user/collectItem', auth, controller.item.favouriteItem);
+  // 分页获取所有闲置物品
+  qiju.get('/item/getAll', auth, controller.item.getAll);
+
   // 检查房源是否存在
   qiju.get('/house/checkHouseid', controller.house.checkHouse);
   // 更新房源信息
@@ -68,10 +86,10 @@ module.exports = app => {
   qiju.delete('/house/houseDelete', auth, controller.house.deleteHouse);
   // 判断房屋rent状态
   qiju.get('/house/houseRent', auth, controller.house.getHouseRentStatus);
-  // 检查闲置物品是否存在
-  qiju.get('/house/itemCheck', auth, controller.item.checkItem);
+  // 根据 item_id 返回闲置物品
+  qiju.get('/item/profile', auth, controller.item.profile);
   // 更新闲置物品信息
-  qiju.post('/user/itemUpdate', auth, controller.item.updateItemInfo);
+  qiju.post('/item/itemUpdate', auth, controller.item.updateItemInfo);
   // 按 keyword 获得房屋信息
   qiju.get('/house/houseSearch', controller.house.searchHouseList);
   // 按 condition 搜索房屋

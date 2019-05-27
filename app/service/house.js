@@ -254,7 +254,28 @@ class HouseService extends Service {
   }
   // 获取本人发布的所有房源
   async getAllMyHouse(user_id) {
-    const houseList = await this.app.mysql.query('select * from house_info where user_id=?', user_id);
+    const houseList = await this.app.mysql.query(
+      'select * from house_info where user_id=?',
+      user_id
+    );
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
+  }
+  // 获取本人收藏的所有房源
+  async getAllMyCollectHouse(user_id) {
+    const houseList = await this.app.mysql.query(
+      // 这里不能用 LEFT JOIN（实测）
+      // 想一想，为什么？
+      'select house_info.* from house_collect inner join house_info on house_collect.house_id=house_info.house_id' +
+        ' where house_collect.user_id=?',
+      user_id
+    );
     if (houseList) {
       houseList.forEach(house => {
         if (typeof house.house_image === 'string') {

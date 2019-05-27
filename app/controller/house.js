@@ -522,6 +522,31 @@ class HouseController extends Controller {
       message: '您好像还没有发布房源，快去创建一个吧 b(￣▽￣)d',
     };
   }
+
+  // 获取我收藏的所有房源
+  async getAllMyCollectHouse() {
+    const { ctx } = this;
+    const { user_id } = ctx.session;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    const resp = await this.service.house.getAllMyCollectHouse(user_id);
+    if (resp && resp.length) {
+      ctx.body = {
+        code: 1,
+        data: {
+          list: resp,
+        },
+      };
+      return;
+    }
+    ctx.body = {
+      code: 1,
+      data: {
+        list: [],
+      },
+      message: '您好像还没有收藏的房源',
+    };
+  }
 }
 
 module.exports = HouseController;

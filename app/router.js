@@ -38,6 +38,8 @@ module.exports = app => {
   qiju.post('/user/collectHouse', auth, controller.house.favouriteHouse);
   // 获取我创建的房源
   qiju.get('/user/getAllMyHouse', auth, controller.house.getAllMyHouse);
+  // 获取我收藏的房源
+  qiju.get('/user/getAllMyCollectHouse', auth, controller.house.getAllMyCollectHouse);
   // 根据house_id获取房源信息
   qiju.get('/house/profile', auth, controller.house.profile);
 

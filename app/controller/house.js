@@ -7,15 +7,22 @@ class HouseController extends Controller {
   // POST 上传房源信息
   async uploadHouseInfo() {
     const { ctx } = this;
-    const {
+    let {
       region,
       address,
       price,
       pet,
       facility,
       house_image,
-      house_rent_staus,
+      price_discuss,
+      house_rent_status,
     } = ctx.request.body;
+    if (Array.isArray(house_image)) {
+      house_image = house_image.join('|');
+    }
+    if (!house_rent_status) {
+      house_rent_status = 1;
+    }
     const user_id = ctx.session.user_id;
     const house_id = shortid.generate();
     // 日志输出
@@ -30,7 +37,8 @@ class HouseController extends Controller {
       pet,
       facility,
       house_image,
-      house_rent_staus,
+      house_rent_status,
+      price_discuss,
     });
     if (resp) {
       ctx.body = {
@@ -117,7 +125,8 @@ class HouseController extends Controller {
       pet,
       facility,
       house_image,
-      house_rent_staus,
+      price_discuss,
+      // house_rent_status,
     } = ctx.request.body;
     const user_id = ctx.session.user_id;
     // 日志输出
@@ -133,7 +142,8 @@ class HouseController extends Controller {
         pet,
         facility,
         house_image,
-        house_rent_staus,
+        price_discuss,
+        // house_rent_status,
       });
       if (resp) {
         ctx.body = {
@@ -144,6 +154,7 @@ class HouseController extends Controller {
     }
     ctx.body = {
       code: -1,
+      message: 'house_id为空',
     };
   }
   // 获取房源按收藏数排序
@@ -154,7 +165,7 @@ class HouseController extends Controller {
       address,
       pet,
       facility,
-      house_rent_staus,
+      house_rent_status,
       page,
       number,
     } = ctx.query;
@@ -186,8 +197,8 @@ class HouseController extends Controller {
     if (facility) {
       sql = sql + 'AND facility = ' + facility + ' ';
     }
-    if (house_rent_staus) {
-      sql = sql + 'AND house_rent_staus = ' + house_rent_staus + ' ';
+    if (house_rent_status) {
+      sql = sql + 'AND house_rent_status = ' + house_rent_status + ' ';
     }
     sql += 'ORDER BY collect_times DESC';
     let limit = -1;
@@ -382,7 +393,7 @@ class HouseController extends Controller {
       price,
       pet,
       facility,
-      // house_rent_staus,
+      // house_rent_status,
       page,
       number,
     } = ctx.request.body;

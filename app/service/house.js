@@ -106,15 +106,33 @@ class HouseService extends Service {
     return await this.app.mysql.get('house_info', { house_id });
   }
   // 获取keyword搜素列表
-  async searchHouseList(keyword) {
-    // TODO REMOVE `select *`
-    // 注意：
-    // 使用用户的输入作为sql语句混入时必须保证过滤不安全字符
-    // 前置 controller 已过滤
-    return await this.app.mysql.query(
-      'select * from `house_info` where `address` REGEXP ? OR `facility` REGEXP ? limit 100',
-      [ keyword, keyword ]
-    );
+  async searchHouseList(keyword, page, user_id) {
+    const offset = 6 * (page - 1);
+    let houseList;
+    if (user_id) {
+      houseList = await this.app.mysql.query(
+        'select h.*, house_collect.house_collect_status, house_collect_sta.collect_times from' +
+          ' (select * from `house_info` where `address` REGEXP ? OR `facility` REGEXP ? limit 6 offset ?)' +
+          ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id' +
+          ' LEFT JOIN house_collect on h.house_id=house_collect.house_id AND house_collect.user_id=?;',
+        [ keyword, keyword, offset, user_id ]
+      );
+    } else {
+      houseList = await this.app.mysql.query(
+        'select h.*, house_collect_sta.collect_times from' +
+          ' (select * from `house_info` where `address` REGEXP ? OR `facility` REGEXP ? limit 6 offset ?)' +
+          ' as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id;',
+        [ keyword, keyword, offset ]
+      );
+    }
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
   }
   // 获取最近上新
   async getRecentHouse(user_id) {
@@ -165,6 +183,34 @@ class HouseService extends Service {
       house.house_image = house.house_image.split('|');
     }
     return house;
+  }
+  // 条件搜索房源
+  async conditionSearch({ sql, queryList, user_id }) {
+    let houseList;
+    if (user_id) {
+      houseList = await this.app.mysql.query(
+        'select h.*, house_collect.house_collect_status, house_collect_sta.collect_times from (' +
+          sql +
+          ') as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id' +
+          ' LEFT JOIN house_collect on h.house_id=house_collect.house_id AND house_collect.user_id=?;',
+        [ ...queryList, user_id ]
+      );
+    } else {
+      houseList = await this.app.mysql.query(
+        'select h.*, house_collect_sta.collect_times from (' +
+          sql +
+          ') as h LEFT JOIN house_collect_sta on h.house_id=house_collect_sta.house_id;',
+        queryList
+      );
+    }
+    if (houseList) {
+      houseList.forEach(house => {
+        if (typeof house.house_image === 'string') {
+          house.house_image = house.house_image.split('|');
+        }
+      });
+    }
+    return houseList;
   }
 }
 

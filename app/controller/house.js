@@ -322,20 +322,34 @@ class HouseController extends Controller {
   // keyword 搜索 HouseList
   async searchHouseList() {
     const { ctx } = this;
-    const keyword = ctx.query.keyword;
+    let { keyword, page } = ctx.query;
+    ctx.logger.info(ctx.query, typeof page);
+    if (/\d+/.test(page)) {
+      page = Number(page);
+    }
+    if (!Number.isInteger(page)) {
+      page = 1;
+      ctx.logger.info('页数为空或不是整数');
+    }
     // 日志输出
-    ctx.logger.info(ctx.query);
+    const user_id = ctx.session.user_id;
     if (_.isEmpty(keyword) || !/^[\u4e00-\u9fa5a-zA-Z0-9]+$/.test(keyword)) {
-      ctx.body = { code: -1 };
+      ctx.body = { code: -1, message: '关键词包含敏感字符' };
       return;
     }
     // 返回值为 house 列表
-    const resp = await this.service.house.searchHouseList(keyword);
+    const resp = await this.service.house.searchHouseList(
+      keyword,
+      page,
+      user_id
+    );
     if (!resp || !resp.length) {
       ctx.body = {
-        code: -1,
+        code: 1,
+        message: '结果为空',
         data: {
           list: [],
+          online: !!user_id,
         },
       };
       return;
@@ -344,6 +358,7 @@ class HouseController extends Controller {
       code: 1,
       data: {
         list: resp,
+        online: !!user_id,
       },
     };
   }
@@ -399,6 +414,95 @@ class HouseController extends Controller {
     ctx.body = {
       code: -1,
       message: '未找到房源',
+    };
+  }
+  // 按 condition 条件 搜索房屋
+  async conditionSearch() {
+    const { ctx } = this;
+    const user_id = ctx.session.user_id;
+    ctx.logger.info(ctx.request.body);
+    const queryList = [];
+    let {
+      region,
+      address,
+      price,
+      pet,
+      facility,
+      // house_rent_staus,
+      page,
+      number,
+    } = ctx.request.body;
+    if (/\d+/.test(page)) {
+      page = Number(page);
+    }
+    if (!Number.isInteger(page)) {
+      page = 1;
+      ctx.logger.info('页数为空或不是整数');
+    }
+    if (!number) {
+      number = 6;
+    }
+    // 日志输出
+    ctx.logger.info(ctx.request.body);
+    let sql = 'SELECT * FROM house_info WHERE 1=1';
+    if (region) {
+      sql += ' AND region=?';
+      queryList.push(region);
+    }
+    if (address) {
+      sql += ' AND address=?';
+      queryList.push(address);
+    }
+    if (/^(\+?\d+),([\+\-]?\d+)$/.test(price)) {
+      const bounds = price.split(',').map(v => Number(v));
+      if (bounds[1] < 1) {
+        sql += ' AND price>=?';
+        queryList.push(bounds[0]);
+      } else {
+        sql += ' AND price>=? AND price<?';
+        queryList.push(bounds[0], bounds[1]);
+      }
+    }
+    if (pet) {
+      sql += ' AND pet=?';
+      queryList.push(pet);
+    }
+    if (facility && facility.length) {
+      console.log(facility);
+      sql += ' AND  facility like ?';
+      queryList.push('%' + facility.join('%') + '%');
+    }
+    let limit = -1;
+    let offset = 0;
+    if (page > 0) {
+      limit = number > 0 ? number : 0;
+      offset = (page - 1) * number;
+      sql = sql + ' LIMIT ?,?';
+      queryList.push(offset, limit);
+    }
+    ctx.logger.info(sql, queryList);
+    const resp = await this.service.house.conditionSearch({
+      sql,
+      queryList,
+      user_id,
+    });
+    if (resp) {
+      ctx.body = {
+        code: 1,
+        data: {
+          list: resp,
+          online: !!user_id,
+        },
+      };
+      return;
+    }
+    ctx.body = {
+      code: 1,
+      message: '结果为空',
+      data: {
+        list: [],
+        online: !!user_id,
+      },
     };
   }
 }

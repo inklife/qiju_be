@@ -51,7 +51,7 @@ class HouseController extends Controller {
     };
   }
   // POST 提交房源评价
-  async editHouseRemark() {
+  async createHouseRemark() {
     const { ctx } = this;
     const { house_id, remark_content } = ctx.request.body;
     const user_id = ctx.session.user_id;
@@ -362,25 +362,6 @@ class HouseController extends Controller {
       message: '未找到房源',
     };
   }
-  // 获取房源相关信息及联系方式
-  async accessOneHouse() {
-    const { ctx } = this;
-    const { house_id } = ctx.query;
-    // 日志输出
-    ctx.logger.info(ctx.query);
-    const resp = await this.service.house.accessOneHouse(house_id);
-    if (resp) {
-      ctx.body = {
-        code: 1,
-        data: resp,
-      };
-      return;
-    }
-    ctx.body = {
-      code: -1,
-      message: '未找到房源',
-    };
-  }
   // 按 condition 条件 搜索房屋
   async conditionSearch() {
     const { ctx } = this;
@@ -468,6 +449,47 @@ class HouseController extends Controller {
         list: [],
         online: !!user_id,
       },
+    };
+  }
+  // 获取房源相关信息及联系方式
+  async accessOneHouse() {
+    const { ctx } = this;
+    const { house_id } = ctx.query;
+    const user_id = ctx.session.user_id;
+    // 日志输出
+    ctx.logger.info(ctx.query, user_id);
+    const resp = await this.service.house.accessOneHouse(house_id, user_id);
+    if (resp) {
+      ctx.body = {
+        code: 1,
+        data: resp,
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+      message: '未找到房源',
+    };
+  }
+  // 拉取房源所有评价
+  async getHouseRemarks() {
+    const { ctx } = this;
+    const { house_id } = ctx.query;
+    // 日志输出
+    ctx.logger.info(ctx.query);
+    const resp = await this.service.house.getHouseRemarks(house_id);
+    if (resp && resp.length) {
+      ctx.body = {
+        code: 1,
+        data: {
+          list: resp,
+        },
+      };
+      return;
+    }
+    ctx.body = {
+      code: -1,
+      message: '未找到房源',
     };
   }
 }

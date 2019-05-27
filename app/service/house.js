@@ -180,14 +180,35 @@ class HouseService extends Service {
     return houseList;
   }
   // 根据house_id获取某一房源相关信息及联系方式
-  async accessOneHouse(house_id) {
-    let house = await this.app.mysql.query(
+  async accessOneHouse(house_id, user_id) {
+    let house;
+    // 这里联表没查出来，不晓得是哪里有问题
+    // if (user_id) {
+    //   house = await this.app.mysql.query(
+    //     'select h.*,phone,wechat,qq, IFNULL(house_collect_status,0) as house_collect_status' +
+    //     ' from house_info h LEFT JOIN user_info ON h.user_id=user_info.user_id' + // 获得房屋主人信息
+    //     ' LEFT JOIN house_collect ON h.house_id=house_collect.house_id' + // 获得在线用户收藏信息
+    //       ' WHERE h.house_id=? AND house_collect.user_id=?',
+    //     [ house_id, user_id ]
+    //   );
+    // } else {
+    house = await this.app.mysql.query(
       'select h.*,phone,wechat,qq from house_info h' +
         ' LEFT JOIN user_info ON h.user_id=user_info.user_id where h.house_id=?;',
       house_id
     );
+    // }
     if (house.length) {
       house = house[0];
+      if (user_id) {
+        const house_collect_info = await this.app.mysql.get('house_collect', {
+          house_id,
+          user_id,
+        });
+        if (house_collect_info) {
+          house.house_collect_status = house_collect_info.house_collect_status;
+        }
+      }
     }
     if (typeof house.house_image === 'string') {
       house.house_image = house.house_image.split('|');
@@ -221,6 +242,15 @@ class HouseService extends Service {
       });
     }
     return houseList;
+  }
+  // 拉取房源评价
+  async getHouseRemarks(house_id) {
+    return await this.app.mysql.query(
+      'select house_remark.remark_content,user_info.user_name from house_remark' +
+        ' left join user_info on house_remark.user_id=user_info.user_id' +
+        ' where house_remark.house_id=? ORDER BY house_remark.create_time DESC',
+      house_id
+    );
   }
 }
 

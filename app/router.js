@@ -33,7 +33,7 @@ module.exports = app => {
   // 新增一个房子 新增一条房屋信息
   qiju.post('/house/create', auth, controller.house.uploadHouseInfo);
   // 提交房源评价
-  qiju.post('/user/remarkEdit', auth, controller.house.editHouseRemark);
+  qiju.post('/house/remarkCreate', auth, controller.house.createHouseRemark);
   // 收藏房源
   qiju.post('/user/collectHouse', auth, controller.house.favouriteHouse);
   // 根据id获取房源信息
@@ -58,6 +58,8 @@ module.exports = app => {
   );
   // 更新房源评论
   qiju.post('/house/remarkUpdate', auth, controller.house.updateHouseRemark);
+  // 拉取评价
+  qiju.get('/house/remarks', auth, controller.house.getHouseRemarks);
   // 删除房屋信息
   qiju.delete('/house/houseDelete', auth, controller.house.deleteHouse);
   // 判断房屋rent状态

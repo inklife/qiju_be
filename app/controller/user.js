@@ -95,6 +95,22 @@ class UserController extends Controller {
       };
     }
   }
+  // 返回在线用户资料
+  async getUserInfo() {
+    const { ctx } = this;
+    const user_id = ctx.session.user_id;
+    if (user_id) {
+      const profile = await this.service.user.getUserInfo({ user_id });
+      ctx.body = {
+        code: 1,
+        data: profile,
+      };
+    } else {
+      ctx.body = {
+        code: -1,
+      };
+    }
+  }
   // POST 注册
   async register() {
     const { ctx } = this;

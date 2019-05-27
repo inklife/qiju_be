@@ -24,6 +24,8 @@ module.exports = app => {
   qiju.get('/user/online', auth, controller.user.online);
   // 注册
   qiju.post('/user/register', controller.user.register);
+  // 获取用户信息
+  qiju.get('/user/profile', auth, controller.user.getUserInfo);
   // 更新用户个人信息
   qiju.post('/user/user_page', auth, controller.user.updateUserPage);
   // 文件上传

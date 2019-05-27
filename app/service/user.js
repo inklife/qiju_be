@@ -28,8 +28,9 @@ class UserService extends Service {
     return { code: -1 };
   }
 
-  async getUserInfo() {
-    //
+  async getUserInfo({ user_id }) {
+    const user = await this.app.mysql.get('user_info', { user_id });
+    return user;
   }
 
   async register(

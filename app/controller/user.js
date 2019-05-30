@@ -133,7 +133,7 @@ class UserController extends Controller {
   // POST 注册
   async register() {
     const { ctx } = this;
-    const { email, phone, gender, region, password } = ctx.request.body;
+    const { email, phone, gender, region, password, user_name } = ctx.request.body;
     // 日志输出
     ctx.logger.info(ctx.request.body);
     // TODO 检查用户是否存在 TYPE
@@ -156,7 +156,8 @@ class UserController extends Controller {
       email,
       phone,
       gender,
-      region
+      region,
+      user_name
     );
     // console.log(resp);
     if (resp) {

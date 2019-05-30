@@ -47,7 +47,8 @@ class UserService extends Service {
     email,
     phone,
     gender,
-    region
+    region,
+    user_name
   ) {
     password = crypto
       .createHmac('sha256', salt.toString())
@@ -61,6 +62,7 @@ class UserService extends Service {
       phone,
       gender,
       region,
+      user_name,
     });
   }
 

@@ -166,6 +166,7 @@ class HouseController extends Controller {
   // 获取房源按收藏数排序
   async getHousesByCollectNumber() {
     const { ctx } = this;
+    const user_id = ctx.session.user_id;
     let {
       region,
       address,
@@ -221,6 +222,7 @@ class HouseController extends Controller {
         code: 1,
         data: {
           list: resp,
+          online: !!user_id,
         },
       };
       return;

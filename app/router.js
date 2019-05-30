@@ -117,4 +117,6 @@ module.exports = app => {
   qiju.get('/security/captcha', controller.security.captcha);
   // 最近上新
   qiju.get('/house/recent', controller.house.getRecentHouse);
+  // 重置密码
+  qiju.post('/user/resetpwd', controller.user.resetPassword);
 };

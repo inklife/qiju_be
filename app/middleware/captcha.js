@@ -18,6 +18,8 @@ module.exports = () => {
       };
       return;
     }
+    // 验证通过 废除验证码
+    ctx.session.captcha = null;
     // 抛给下一个中间件
     return await next();
   };

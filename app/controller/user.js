@@ -192,6 +192,31 @@ class UserController extends Controller {
       message: '修改失败',
     };
   }
+
+  async resetPassword() {
+    const { ctx } = this;
+    const { email, vercode, password } = ctx.request.body;
+    // 日志输出
+    ctx.logger.info(ctx.request.body);
+    const pwdCode = await this.app.redis.get(`${email}|VerificationCode`);
+    if (pwdCode !== vercode) {
+      ctx.body = {
+        code: -1,
+        message: '情况不对，溜了溜了~',
+      };
+      return;
+    }
+    // 重置密码
+    const resp = await this.service.user.resetPassword(email, password);
+    // ctx.logger.info(resp);
+    // console.log(exist);
+    if (resp.affectedRows === 1) {
+      ctx.body = {
+        code: 1,
+      };
+      return;
+    }
+  }
 }
 
 module.exports = UserController;

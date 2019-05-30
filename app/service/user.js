@@ -79,6 +79,18 @@ class UserService extends Service {
     ); // 更新 posts 表中的记录
     return result.affectedRows === 1;
   }
+  // 邮箱重置密码
+  async resetPassword(email, password) {
+    const salt = this.ctx.helper.random(6);
+    password = crypto
+      .createHmac('sha256', salt.toString())
+      .update(password.toString())
+      .digest('hex');
+    return await this.app.mysql.query(
+      'UPDATE user_info SET password=? , salt=? WHERE email=?;',
+      [ password, salt, email ]
+    );
+  }
 }
 
 module.exports = UserService;

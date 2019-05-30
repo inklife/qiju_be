@@ -10,7 +10,13 @@ class UserService extends Service {
     if (email) {
       user_info = await this.app.mysql.get('user_info', { email });
     } else if (phone) {
-      user_info = await this.app.mysql.get('user_info', { phone });
+      user_info = await this.app.mysql.query(
+        'select * from user_info where phone=? ORDER BY create_time asc LIMIT 1',
+        phone
+      );
+      if (Array.isArray(user_info)) {
+        user_info = user_info[0];
+      }
     }
     if (!user_info) {
       this.logger.info(`登录失败 - 未找到用户|${email}|${phone}`);

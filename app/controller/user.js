@@ -100,10 +100,29 @@ class UserController extends Controller {
     const { ctx } = this;
     const user_id = ctx.session.user_id;
     if (user_id) {
-      const profile = await this.service.user.getUserInfo({ user_id });
+      const {
+        email,
+        gender,
+        phone,
+        qq,
+        region,
+        user_image,
+        user_name,
+        wechat,
+      } = await this.service.user.getUserInfo({ user_id });
       ctx.body = {
         code: 1,
-        data: profile,
+        data: {
+          email,
+          gender,
+          phone,
+          qq,
+          region,
+          user_id,
+          user_image,
+          user_name,
+          wechat,
+        },
       };
     } else {
       ctx.body = {

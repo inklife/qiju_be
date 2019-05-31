@@ -89,15 +89,35 @@ class UserService extends Service {
   }
   // 邮箱重置密码
   async resetPassword(email, password) {
+    let user_info;
+    if (email) {
+      user_info = await this.app.mysql.get('user_info', { email });
+    }
+    if (!user_info) {
+      this.logger.info(`重置密码失败 - 未找到用户|${email}`);
+      return { code: -1, message: '再检查一下账号？' };
+    }
+    const passwordToCheck = crypto
+      .createHmac('sha256', user_info.salt.toString())
+      .update(password.toString())
+      .digest('hex');
+    if (passwordToCheck === user_info.password) {
+      this.logger.info(user_info);
+      return {
+        code: -1,
+        message: '因密码强度等原因，此密码被拒绝，建议您更换一个密码',
+      };
+    }
     const salt = this.ctx.helper.random(6);
     password = crypto
       .createHmac('sha256', salt.toString())
       .update(password.toString())
       .digest('hex');
-    return await this.app.mysql.query(
+    await this.app.mysql.query(
       'UPDATE user_info SET password=? , salt=? WHERE email=?;',
       [ password, salt, email ]
     );
+    return { code: 1 };
   }
 }
 

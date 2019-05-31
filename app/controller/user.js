@@ -133,7 +133,14 @@ class UserController extends Controller {
   // POST 注册
   async register() {
     const { ctx } = this;
-    const { email, phone, gender, region, password, user_name } = ctx.request.body;
+    const {
+      email,
+      phone,
+      gender,
+      region,
+      password,
+      user_name,
+    } = ctx.request.body;
     // 日志输出
     ctx.logger.info(ctx.request.body);
     // TODO 检查用户是否存在 TYPE
@@ -212,12 +219,16 @@ class UserController extends Controller {
       message: '修改失败',
     };
   }
-
+  // 重置密码
   async resetPassword() {
     const { ctx } = this;
     const { email, vercode, password } = ctx.request.body;
+    // 过滤用户密码等敏感信息
+    const fiterInfo = Object.assign({}, ctx.request.body, {
+      password: '**----**',
+    });
     // 日志输出
-    ctx.logger.info(ctx.request.body);
+    ctx.logger.info(fiterInfo);
     const pwdCode = await this.app.redis.get(`${email}|VerificationCode`);
     if (pwdCode !== vercode) {
       ctx.body = {
@@ -228,14 +239,16 @@ class UserController extends Controller {
     }
     // 重置密码
     const resp = await this.service.user.resetPassword(email, password);
-    // ctx.logger.info(resp);
-    // console.log(exist);
-    if (resp.affectedRows === 1) {
+    if (resp.code === 1) {
+      // 密码重置成功 作废邮箱验证码
+      this.app.redis.del(`${email}|VerificationCode`);
+      // 返回
       ctx.body = {
         code: 1,
       };
       return;
     }
+    ctx.body = resp;
   }
 }
 

@@ -54,10 +54,17 @@ class HouseController extends Controller {
   async createHouseRemark() {
     const { ctx } = this;
     const { house_id, remark_content } = ctx.request.body;
-    const user_id = ctx.session.user_id;
-    const remark_id = shortid.generate();
     // 日志输出
     ctx.logger.info(ctx.request.body);
+    if (!house_id || !remark_content) {
+      ctx.body = {
+        code: -1,
+        message: 'house_id、评论不能为空',
+      };
+      return;
+    }
+    const user_id = ctx.session.user_id;
+    const remark_id = shortid.generate();
     const resp = await this.service.house.updateHouseRemark({
       remark_id,
       user_id,

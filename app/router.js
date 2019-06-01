@@ -59,7 +59,7 @@ module.exports = app => {
   qiju.get('/house/profile', auth, controller.house.profile);
 
   // 获得房源信息及联系方式
-  qiju.get('/house/access', controller.house.accessOneHouse);
+  qiju.get('/house/access', auth, controller.house.accessOneHouse);
 
   // 上传闲置物品信息
   qiju.post('/user/itemEdit', auth, controller.item.uploadItemInfo);
